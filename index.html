@@ -3,27 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>My Image</title>
+  <title>Image Viewer</title>
   <style>
-    html,body {
-      height: 100%;
-      margin: 0;
-      background: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    html, body {
+      height: 100%; margin: 0; background: #111; color: #ddd;
+      display: grid; place-items: center; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
+    figure { margin: 0; text-align: center; }
     img {
-      max-width: 95vw;
-      max-height: 95vh;
-      display: block;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      border-radius: 8px;
+      max-width: 95vw; max-height: 95vh; display: block; border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
     }
+    .hint { margin-top: 12px; font-size: 14px; opacity: .8 }
+    .error { color: #ffb3b3; margin-top: 12px; font-size: 14px; }
+    a { color: #7dc1ff; text-decoration: none; }
   </style>
 </head>
 <body>
-  <img src="https://drive.google.com/uc?export=view&id=1cnwG9W-hlGEUoyDTyPtmXOlAiVKL4aJZ" />
+  <figure>
+    <!-- 1차 시도: uc?export=view -->
+    <img id="img"
+         src="https://drive.google.com/uc?export=view&id=1AX07y2a82KmYibp66gqnXqVmUYVBlrdi"
+         alt="image from Google Drive">
+    <div class="hint">이미지가 안 보이면 잠시만 기다렸다 새로고침(F5) 하세요.</div>
+    <div id="err" class="error" style="display:none"></div>
+  </figure>
+
+  <script>
+    (function(){
+      const img = document.getElementById('img');
+      const err = document.getElementById('err');
+
+      // 2차 폴백: 썸네일 엔드포인트(고해상도)
+      const FALLBACK = "https://drive.google.com/thumbnail?id=1AX07y2a82KmYibp66gqnXqVmUYVBlrdi&sz=w2000";
+
+      let triedFallback = false;
+
+      img.addEventListener('error', () => {
+        if (!triedFallback) {
+          triedFallback = true;
+          img.src = FALLBACK;
+        } else {
+          err.style.display = 'block';
+          err.innerHTML =
+            '이미지를 불러오지 못했습니다. 다음을 확인해 주세요:<br>' +
+            '1) 구글드라이브에서 <b>“링크가 있는 모든 사용자(보기)”</b>로 공유되어 있는지<br>' +
+            '2) 파일ID가 올바른지<br>' +
+            '3) 이미지 포맷(JPG/PNG/WEBP)인지';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
-
